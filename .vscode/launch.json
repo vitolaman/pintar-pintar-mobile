@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Android: build and debug",
+      "type": "android",
+      "request": "launch",
+      "preLaunchTask": "Android: assemble debug",
+      "appSrcRoot": "${workspaceFolder}/androidApp/src/main",
+      "manifestFile": "${workspaceFolder}/androidApp/build/intermediates/merged_manifests/debug/processDebugManifest/AndroidManifest.xml",
+      "apkFile": "${workspaceFolder}/androidApp/build/outputs/apk/debug/androidApp-debug.apk",
+      "launchActivity": "com.getmobilestack.kmp.android.MainActivity"
+    }
+  ]
+}

@@ -1,9 +1,38 @@
+import java.util.Properties
+import java.net.URI
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.compose.compiler)
+}
+
+val environment = Properties().apply {
+    val envFile = rootProject.file(".env")
+    if (envFile.exists()) envFile.inputStream().use { load(it) }
+}
+val configuredApiBaseUrl = providers.environmentVariable("API_BASE_URL")
+    .orElse(environment.getProperty("API_BASE_URL") ?: "")
+abstract class GenerateApiConfig : DefaultTask() {
+    @get:Input abstract val apiBaseUrl: Property<String>
+    @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
+
+    @TaskAction fun generate() {
+        val value = apiBaseUrl.get().trim().trimEnd('/')
+        val uri = runCatching { URI(value) }.getOrNull()
+        require(uri?.scheme == "https" && !uri.host.isNullOrBlank() && uri.userInfo == null && uri.path.isNullOrEmpty() && uri.query == null && uri.fragment == null && value.none { it in "\"\\\r\n" }) {
+            "Set API_BASE_URL to an HTTPS URL in .env or the environment."
+        }
+        val output = outputDirectory.get().file("com/getmobilestack/kmp/pintar/config/ApiConfig.kt").asFile
+        output.parentFile.mkdirs()
+        output.writeText("package com.getmobilestack.kmp.pintar.config\n\nobject ApiConfig { const val BASE_URL = \"$value\" }\n")
+    }
+}
+val generateApiConfig = tasks.register<GenerateApiConfig>("generateApiConfig") {
+    apiBaseUrl.set(configuredApiBaseUrl)
+    outputDirectory.set(layout.buildDirectory.dir("generated/apiConfig/commonMain"))
 }
 
 kotlin {
@@ -29,6 +58,7 @@ kotlin {
     }
 
     sourceSets {
+        commonMain { kotlin.srcDir(layout.buildDirectory.dir("generated/apiConfig/commonMain")) }
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(compose.runtime)
@@ -43,10 +73,15 @@ kotlin {
             implementation(libs.gitlive.firebase.auth)
             implementation(libs.gitlive.firebase.config)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.ktor.core)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor)
             implementation(libs.essenty.lifecycle)
             api(libs.napier)
             implementation(libs.kotlinx.datetime)
             implementation(libs.multiplatform.settings.no.arg)
+            implementation(libs.kvault)
+            implementation(libs.filekit.compose)
             implementation(libs.revenuecat.purchases.core)
             implementation(libs.revenuecat.purchases.datetime)
             implementation(libs.revenuecat.purchases.ui)
@@ -72,6 +107,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.ktor.mock)
         }
 
         // RevenueCat uses generated Kotlin bindings for native code on iOS
@@ -85,6 +121,12 @@ kotlin {
     task("testClasses") // Fix for cannot locate tasks that match ':shared:testClasses'
 }
 
+tasks.configureEach {
+    if (name.startsWith("compileKotlin") || name.startsWith("compileDebugKotlin") || name.startsWith("compileReleaseKotlin")) {
+        dependsOn(generateApiConfig)
+    }
+}
+
 compose.resources {
     publicResClass = true
     packageOfResClass = "com.getmobilestack.kmp.resources"
@@ -93,6 +135,7 @@ compose.resources {
 
 android {
     namespace = "com.getmobilestack.kmp"
+    buildFeatures { buildConfig = true }
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()

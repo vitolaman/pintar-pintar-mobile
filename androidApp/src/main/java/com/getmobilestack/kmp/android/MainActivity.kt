@@ -3,24 +3,23 @@ package com.getmobilestack.kmp.android
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.arkivanov.decompose.defaultComponentContext
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
-import com.getmobilestack.kmp.android.provider.AndroidCapabilityProvider
-import com.getmobilestack.kmp.android.provider.FirebaseAnalyticsProvider
-import com.getmobilestack.kmp.component.DefaultRootComponent
-import com.getmobilestack.kmp.ui.screen.RootView
+import com.getmobilestack.kmp.pintar.ui.PintarApp
+import com.getmobilestack.kmp.pintar.account.SecureSessionStore
+import com.getmobilestack.kmp.pintar.account.SessionStore
+import com.getmobilestack.kmp.pintar.account.AccountSession
+import com.liftric.kvault.KVault
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val rootComponent = DefaultRootComponent(
-            componentContext = defaultComponentContext(),
-            osCapabilityProvider = AndroidCapabilityProvider(this),
-            analyticsProvider = FirebaseAnalyticsProvider(Firebase.analytics),
-        )
+        val sessionStore = object : SessionStore {
+            private val delegate by lazy { SecureSessionStore(KVault(applicationContext, "pintar_secure_session")) }
+            override fun load() = delegate.load()
+            override fun save(session: AccountSession) = delegate.save(session)
+            override fun clear() = delegate.clear()
+        }
         setContent {
-            RootView(rootComponent)
+            PintarApp(sessionStore)
         }
     }
 }

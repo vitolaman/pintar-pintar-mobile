@@ -28,6 +28,9 @@ camerax = "1.4.1"
 revenuecat-purchases = "1.2.0+13.6.0"
 reviewKtx = "2.0.2"
 openaiclient = "4.0.1"
+coil = "3.0.4"
+kvault = "1.12.0"
+filekit = "0.8.8"
 
 [libraries]
 
@@ -76,14 +79,20 @@ revenuecat-purchases-ui = { module = "com.revenuecat.purchases:purchases-kmp-ui"
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettingsNoArg" }
+kvault = { module = "com.liftric:kvault", version.ref = "kvault" }
+filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekit" }
 paging-common = { module = "app.cash.paging:paging-common", version.ref = "multiplatform-paging" }
 paging-compose-common = { module = "app.cash.paging:paging-compose-common", version.ref = "multiplatform-paging" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
 openai-client = { module = "com.aallam.openai:openai-client", version.ref = "openaiclient" }
 
 #Network
+ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktor-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
 #UI
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }

@@ -12,7 +12,7 @@ struct iOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView(root: appDelegate.root)
+            RootView()
                 .ignoresSafeArea(.all, edges: .bottom) // Compose has own keyboard handler
         }
     }

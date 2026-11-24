@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Android: assemble debug",
+      "type": "shell",
+      "command": "if [ -z \"$JAVA_HOME\" ] && [ -d '/Applications/Android Studio.app/Contents/jbr/Contents/Home' ]; then export JAVA_HOME='/Applications/Android Studio.app/Contents/jbr/Contents/Home'; fi; ./gradlew :androidApp:assembleDebug",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Android: Logcat",
+      "type": "process",
+      "command": "adb",
+      "args": ["logcat", "-s", "PintarApi:D"],
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    }
+  ]
+}

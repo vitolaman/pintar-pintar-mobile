@@ -13,7 +13,7 @@ android {
     namespace = "com.getmobilestack.kmp.android"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
-        applicationId = "com.getmobilestack.kmp" // TODO: Your app id here
+        applicationId = "id.pintarpintar.dev"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -21,13 +21,8 @@ android {
     }
     signingConfigs {
         val prop = Properties().apply {
-            load(FileInputStream(File(rootProject.rootDir, "local.properties")))
-        }
-        getByName("debug") {
-            storeFile = file("debug_keystore.jks")
-            storePassword = prop.getProperty("DEBUG_PASSWORD")
-            keyAlias = "androiddebugkey"
-            keyPassword = prop.getProperty("DEBUG_PASSWORD")
+            val localProperties = File(rootProject.rootDir, "local.properties")
+            if (localProperties.exists()) load(FileInputStream(localProperties))
         }
         create("release") {
             storeFile = file("release_keystore.jks")
@@ -72,6 +67,7 @@ android {
 
 dependencies {
     implementation(projects.shared)
+    implementation(libs.kvault)
     implementation(libs.androidx.activity.compose)
     implementation(libs.billing)
     implementation(libs.review.ktx)

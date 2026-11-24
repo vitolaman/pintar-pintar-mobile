@@ -5,12 +5,6 @@ import FirebaseAuth
 import FirebaseCrashlytics
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    let root: RootComponent = DefaultRootComponent(
-        componentContext: DefaultComponentContext(lifecycle: ApplicationLifecycle()),
-        osCapabilityProvider: IOSCapabilityProvider(),
-        analyticsProvider: FirebaseAnalyticsProvider()
-    )
-    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
 #if DEBUG
         // Debug build
